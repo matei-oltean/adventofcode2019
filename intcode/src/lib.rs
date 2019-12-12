@@ -18,13 +18,24 @@ impl Machine {
         }
     }
 
+    pub fn from_file(path: &str, phase: Option<CodeType>) -> Self {
+        let program = reader::read_input(path)
+            .split(",")
+            .map(|c| c.parse::<CodeType>().unwrap())
+            .enumerate()
+            .map(|(i, c)| (i as CodeType, c))
+            .collect();
+        Machine {
+            program: program,
+            index: 0 as CodeType,
+            phase: phase,
+        }
+    }
+
     pub fn process(&mut self, input: CodeType) -> Option<CodeType> {
         let mut result = None;
         let mut used_input = false;
-        let (pow_10, _) = (0..3).fold((Vec::new(), 100), |(mut pow_10, pow), _| {
-            pow_10.push(pow);
-            (pow_10, pow * 10)
-        });
+        let pow_10: Vec<CodeType> = vec![100, 1_000, 10_000];
         loop {
             let operation = self.get(self.index);
             let code = operation % 100;
@@ -34,7 +45,7 @@ impl Machine {
             let arg_length = number_of_args(code);
 
             let args: Vec<CodeType> = (0..arg_length)
-                .map(| i | match operation / pow_10[(i as usize)] % 10 {
+                .map(|i| match operation / pow_10[(i as usize)] % 10 {
                     0 => self.get(self.get(self.index + (i as CodeType) + 1)),
                     1 => self.get(self.index + (i as CodeType) + 1),
                     _ => 0,
@@ -42,14 +53,12 @@ impl Machine {
                 .collect();
             self.index += arg_length + 1;
             let position = self.get(self.index - 1);
-            let next_result = match code {
+            match code {
                 1 => {
                     self.set(position, args[0] + args[1]);
-                    None
                 }
                 2 => {
                     self.set(position, args[0] * args[1]);
-                    None
                 }
                 3 => {
                     if used_input {
@@ -67,37 +76,29 @@ impl Machine {
                         }
                     };
                     self.set(position, inp);
-                    None
                 }
                 4 => {
                     println!("{}", args[0]);
-                    Some(args[0])
+                    result = Some(args[0]);
                 }
                 5 => {
                     if args[0] != 0 {
                         self.index = args[1]
                     }
-                    None
                 }
                 6 => {
                     if args[0] == 0 {
                         self.index = args[1]
                     }
-                    None
                 }
                 7 => {
                     self.set(position, (args[0] < args[1]) as CodeType);
-                    None
                 }
                 8 => {
                     self.set(position, (args[0] == args[1]) as CodeType);
-                    None
                 }
-                _ => None,
+                _ => (),
             };
-            if next_result != None {
-                result = next_result;
-            }
         }
         result
     }
