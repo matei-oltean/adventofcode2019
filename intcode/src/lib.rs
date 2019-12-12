@@ -7,6 +7,7 @@ pub struct Machine {
     program: Program,
     index: CodeType,
     phase: Option<CodeType>,
+    base: CodeType,
 }
 
 impl Machine {
@@ -15,6 +16,7 @@ impl Machine {
             program: program,
             index: 0 as CodeType,
             phase: phase,
+            base: 0 as CodeType,
         }
     }
 
@@ -25,11 +27,7 @@ impl Machine {
             .enumerate()
             .map(|(i, c)| (i as CodeType, c))
             .collect();
-        Machine {
-            program: program,
-            index: 0 as CodeType,
-            phase: phase,
-        }
+        Machine::new(program, phase)
     }
 
     pub fn process(&mut self, input: CodeType) -> Option<CodeType> {
@@ -46,19 +44,26 @@ impl Machine {
 
             let args: Vec<CodeType> = (0..arg_length)
                 .map(|i| match operation / pow_10[(i as usize)] % 10 {
-                    0 => self.get(self.get(self.index + (i as CodeType) + 1)),
-                    1 => self.get(self.index + (i as CodeType) + 1),
+                    0 => self.get(self.index + (i as CodeType) + 1),
+                    1 => self.index + (i as CodeType) + 1,
+                    2 => self.base + self.get(self.index + (i as CodeType) + 1),
                     _ => 0,
                 })
                 .collect();
             self.index += arg_length + 1;
-            let position = self.get(self.index - 1);
+            let position = *args.last().unwrap();
+            let a = self.get(args[0]);
+            let b = if arg_length <= 1 {
+                0
+            } else {
+                self.get(args[1])
+            };
             match code {
                 1 => {
-                    self.set(position, args[0] + args[1]);
+                    self.set(position, a + b);
                 }
                 2 => {
-                    self.set(position, args[0] * args[1]);
+                    self.set(position, a * b);
                 }
                 3 => {
                     if used_input {
@@ -78,24 +83,27 @@ impl Machine {
                     self.set(position, inp);
                 }
                 4 => {
-                    println!("{}", args[0]);
-                    result = Some(args[0]);
+                    println!("{}", a);
+                    result = Some(a);
                 }
                 5 => {
-                    if args[0] != 0 {
-                        self.index = args[1]
+                    if a != 0 {
+                        self.index = b
                     }
                 }
                 6 => {
-                    if args[0] == 0 {
-                        self.index = args[1]
+                    if a == 0 {
+                        self.index = b
                     }
                 }
                 7 => {
-                    self.set(position, (args[0] < args[1]) as CodeType);
+                    self.set(position, (a < b) as CodeType);
                 }
                 8 => {
-                    self.set(position, (args[0] == args[1]) as CodeType);
+                    self.set(position, (a == b) as CodeType);
+                }
+                9 => {
+                    self.base += a;
                 }
                 _ => (),
             };
@@ -107,8 +115,14 @@ impl Machine {
         self.program.insert(index, value);
     }
 
-    pub fn get(&self, index: CodeType) -> CodeType {
-        *self.program.get(&index).unwrap()
+    pub fn get(&mut self, index: CodeType) -> CodeType {
+        match self.program.get(&index) {
+            None => {
+                self.set(index, 0);
+                0
+            }
+            Some(n) => *n,
+        }
     }
 
     pub fn print(&self) {
@@ -119,7 +133,7 @@ impl Machine {
 fn number_of_args(code: CodeType) -> CodeType {
     match code {
         1 | 2 | 7 | 8 => 3,
-        3 | 4 => 1,
+        3 | 4 | 9 => 1,
         5 | 6 => 2,
         _ => 0,
     }
