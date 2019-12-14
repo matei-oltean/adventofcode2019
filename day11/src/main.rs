@@ -46,7 +46,7 @@ fn paint(machine: &mut Machine, initial_colour: isize) -> HashMap<Point, isize> 
             None => 0,
             Some(x) => *x
         };
-        let op_result = machine.process(colour);
+        let op_result = machine.process(Some(colour));
         if op_result.len() == 0 {
             return result;
         }

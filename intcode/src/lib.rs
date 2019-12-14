@@ -30,7 +30,7 @@ impl Machine {
         Machine::new(program, phase)
     }
 
-    pub fn process(&mut self, input: CodeType) -> Vec<CodeType> {
+    pub fn process(&mut self, input: Option<CodeType>) -> Vec<CodeType> {
         let mut result = vec![];
         let mut used_input = false;
         let pow_10: Vec<CodeType> = vec![100, 1_000, 10_000];
@@ -65,23 +65,29 @@ impl Machine {
                 2 => {
                     self.set(position, a * b);
                 }
-                3 => {
-                    if used_input {
+                3 => match input {
+                    None => {
                         self.index -= 2;
                         break;
                     }
-                    let inp = match self.phase {
-                        Some(n) => {
-                            self.phase = None;
-                            n
+                    Some(i) => {
+                        if used_input {
+                            self.index -= 2;
+                            break;
                         }
-                        None => {
-                            used_input = true;
-                            input
-                        }
-                    };
-                    self.set(position, inp);
-                }
+                        let inp = match self.phase {
+                            Some(n) => {
+                                self.phase = None;
+                                n
+                            }
+                            None => {
+                                used_input = true;
+                                i
+                            }
+                        };
+                        self.set(position, inp);
+                    }
+                },
                 4 => {
                     result.push(a);
                 }

@@ -10,6 +10,6 @@ fn main() {
     let mut machine = Machine::new(input, None);
     machine.set(1, 12);
     machine.set(2, 2);
-    machine.process(0);
+    machine.process(Some(0));
     println!("{}", machine.get(0));
 }

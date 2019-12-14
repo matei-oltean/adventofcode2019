@@ -36,6 +36,7 @@ fn diff((x, y, z): &mut Position, (dx, dy, dz): &Position) {
 }
 
 fn get_energy(steps: isize, planets: &mut [Position]) -> isize {
+    let mut start = vec![(0 as isize, 0 as isize, 0 as isize); planets.len()];
     let mut velocities: Vec<Position> = (0..planets.len())
         .map(|_| (0 as isize, 0 as isize, 0 as isize))
         .collect();
@@ -58,8 +59,37 @@ fn get_energy(steps: isize, planets: &mut [Position]) -> isize {
         .sum()
 }
 
+fn get_cycle(planets: &mut [Position]) -> isize {
+    let mut res = 0;
+    let mut velocities: Vec<Position> = (0..planets.len())
+        .map(|_| (0 as isize, 0 as isize, 0 as isize))
+        .collect();
+    loop {
+        for (i, (x, y, z)) in planets.iter().enumerate() {
+            for j in i + 1..planets.len() {
+                let (xx, yy, zz) = planets[j];
+                let mut diff = (xx - x, yy - y, zz - z);
+                update_position(&mut velocities[i], &diff);
+                times(&mut diff, -1 as isize);
+                update_position(&mut velocities[j], &diff);
+            }
+        }
+        res += 1;
+        if !velocities
+            .iter()
+            .any(|(dx, dy, dz)| (dx != &0) || (dy != &0) || (dz != &0))
+        {
+            return res;
+        }
+
+        for (i, mut p) in planets.iter_mut().enumerate() {
+            diff(&mut p, &velocities[i]);
+        }
+    }
+}
+
 fn main() {
-    let input = reader::read_input("12.input");
+    let input = reader::read_input("12.test");
     let mut system: Vec<_> = input
         .lines()
         .map(|s| {
@@ -71,6 +101,8 @@ fn main() {
             (pos[0], pos[1], pos[2])
         })
         .collect();
-    let energy = get_energy(1_000, &mut system);
-    println!("{}", energy);
+    //let energy = get_energy(1_000, &mut system);
+    //println!("{}", energy);
+    let cycle = get_cycle(&mut system);
+    println!("{}", cycle);
 }

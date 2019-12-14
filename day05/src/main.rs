@@ -8,5 +8,5 @@ fn main() {
         .map(|(i, c)| (i as CodeType, c))
         .collect();
     let mut machine = Machine::new(input, None);
-    machine.process(5);
+    machine.process(Some(5));
 }
