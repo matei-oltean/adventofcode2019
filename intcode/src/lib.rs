@@ -30,8 +30,8 @@ impl Machine {
         Machine::new(program, phase)
     }
 
-    pub fn process(&mut self, input: CodeType) -> Option<CodeType> {
-        let mut result = None;
+    pub fn process(&mut self, input: CodeType) -> Vec<CodeType> {
+        let mut result = vec![];
         let mut used_input = false;
         let pow_10: Vec<CodeType> = vec![100, 1_000, 10_000];
         loop {
@@ -83,8 +83,7 @@ impl Machine {
                     self.set(position, inp);
                 }
                 4 => {
-                    println!("{}", a);
-                    result = Some(a);
+                    result.push(a);
                 }
                 5 => {
                     if a != 0 {
