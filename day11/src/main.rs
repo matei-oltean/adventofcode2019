@@ -44,7 +44,7 @@ fn paint(machine: &mut Machine, initial_colour: isize) -> HashMap<Point, isize> 
     loop {
         let colour = match result.get(&pt) {
             None => 0,
-            Some(x) => *x
+            Some(x) => *x,
         };
         let op_result = machine.process(Some(colour));
         if op_result.len() == 0 {
@@ -65,19 +65,21 @@ fn main() {
         .filter(|(_, c)| if **c == 0 { false } else { true })
         .map(|(p, _)| p)
         .collect();
-    let (min_x, min_y): Point = filtered.iter().fold(
-        (i32::max_value(), i32::max_value()),
-        |(mx, my), (x, y)| (mx.min(*x), my.min(*y)),
-    );
+    let (min_x, min_y): Point = filtered
+        .iter()
+        .fold((i32::max_value(), i32::max_value()), |(mx, my), (x, y)| {
+            (mx.min(*x), my.min(*y))
+        });
     let normalised: HashSet<_> = filtered
         .iter()
         .map(|(x, y)| (x - min_x, y - min_y))
         .collect();
-    
-    let (max_x, max_y): Point = normalised.iter().fold(
-        (i32::min_value(), i32::min_value()),
-        |(mx, my), (x, y)| (mx.max(*x), my.max(*y)),
-    );
+
+    let (max_x, max_y): Point = normalised
+        .iter()
+        .fold((i32::min_value(), i32::min_value()), |(mx, my), (x, y)| {
+            (mx.max(*x), my.max(*y))
+        });
 
     let mut s = String::new();
     for i in (0..max_y + 1).rev() {
