@@ -61,7 +61,7 @@ fn find_number_of_asteroids(p: &Point, m: &[Point]) -> isize {
 
 fn find_asteroid_circle(p: &Point, m: &HashSet<&Point>) -> Vec<(Point, Angle)> {
     let mut asteroids_at_angle = HashMap::new();
-    for point in m {
+    for &point in m {
         let slope = find_slope(p, point);
         let dist = dist(p, point);
         if dist == 0 {
@@ -80,7 +80,7 @@ fn find_asteroid_circle(p: &Point, m: &HashSet<&Point>) -> Vec<(Point, Angle)> {
     }
     asteroids_at_angle
         .iter()
-        .map(|(slope, (pt, _))| (***pt, slope_to_angle(slope)))
+        .map(|(slope, (pt, _))| (**pt, slope_to_angle(slope)))
         .collect()
 }
 
