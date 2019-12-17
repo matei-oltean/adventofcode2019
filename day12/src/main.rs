@@ -47,9 +47,7 @@ fn diff((x, y, z): &mut Position, (dx, dy, dz): &Position) {
 }
 
 fn get_energy(steps: isize, planets: &mut [Position]) -> isize {
-    let mut velocities: Vec<Position> = (0..planets.len())
-        .map(|_| (0 as isize, 0 as isize, 0 as isize))
-        .collect();
+    let mut velocities: Vec<Position> = vec![(0 as isize, 0 as isize, 0 as isize); planets.len()];
     for _ in 0..steps {
         for (i, (x, y, z)) in planets.iter().enumerate() {
             for j in i + 1..planets.len() {
@@ -83,9 +81,7 @@ fn get_cycle(planets: &[Position]) -> usize {
     };
     let mut res = 0;
     let mut new_positions: Vec<_> = planets.iter().cloned().collect();
-    let mut velocities: Vec<Position> = (0..planets.len())
-        .map(|_| (0 as isize, 0 as isize, 0 as isize))
-        .collect();
+    let mut velocities: Vec<Position> = vec![(0 as isize, 0 as isize, 0 as isize); planets.len()];
     let mut found: usize = 0;
     let mut cycles = HashMap::new();
 

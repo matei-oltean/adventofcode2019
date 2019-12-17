@@ -42,9 +42,9 @@ fn do_iteration_with_offset(iterations: usize, array: &[usize], repeat: usize) -
         .collect();
     for _ in 0..iterations {
         let mut temp = array_res.iter().sum::<usize>();
-        for i in 0..array_res.len() {
-            let t = array_res[i];
-            array_res[i] = temp % 10;
+        for p in array_res.iter_mut() {
+            let t = *p;
+            *p = temp % 10;
             temp -= t;
         }
     }

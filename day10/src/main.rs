@@ -47,16 +47,13 @@ fn find_slope((x, y): &Point, (xx, yy): &Point) -> Slope {
     }
 }
 
-fn find_number_of_asteroids(p: &Point, m: &[Point]) -> isize {
+fn find_number_of_asteroids(p: &Point, m: &[Point]) -> usize {
     let mut asteroids = HashSet::new();
-    let mut result = 0;
     for point in m {
         let slope = find_slope(p, point);
-        if asteroids.insert(slope) {
-            result += 1
-        }
+        asteroids.insert(slope);
     }
-    result
+    asteroids.len()
 }
 
 fn find_asteroid_circle(p: &Point, m: &HashSet<&Point>) -> Vec<(Point, Angle)> {
