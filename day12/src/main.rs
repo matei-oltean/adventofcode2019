@@ -3,13 +3,11 @@ use std::str::FromStr;
 type Position = (isize, isize, isize);
 
 fn get_ith(i: i32, (x, y, z): &Position) -> isize {
-    if i == 0 {
-        return *x;
+    match i {
+        0 => *x,
+        1 => *y,
+        _ => *z,
     }
-    if i == 1 {
-        return *y;
-    }
-    *z
 }
 
 fn times((x, y, z): &mut Position, n: isize) {
