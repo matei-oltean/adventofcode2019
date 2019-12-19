@@ -52,13 +52,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "day14"
-version = "0.1.0"
-dependencies = [
- "reader 0.1.0",
-]
-
-[[package]]
 name = "day16"
 version = "0.1.0"
 dependencies = [
@@ -71,6 +64,13 @@ version = "0.1.0"
 dependencies = [
  "intcode 0.1.0",
  "reader 0.1.0",
+]
+
+[[package]]
+name = "day19"
+version = "0.1.0"
+dependencies = [
+ "intcode 0.1.0",
 ]
 
 [[package]]
