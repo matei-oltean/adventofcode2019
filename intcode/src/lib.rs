@@ -21,12 +21,7 @@ impl Machine {
     }
 
     pub fn from_file(path: &str, phase: Option<CodeType>) -> Self {
-        let program = reader::read_input(path)
-            .split(",")
-            .map(|c| c.parse::<CodeType>().unwrap())
-            .enumerate()
-            .map(|(i, c)| (i as CodeType, c))
-            .collect();
+        let program = program_from_file(path);
         Machine::new(program, phase)
     }
 
@@ -133,6 +128,15 @@ impl Machine {
     pub fn print(&self) {
         dbg!(&self.program);
     }
+}
+
+pub fn program_from_file(path: &str) -> Program {
+    reader::read_input(path)
+        .split(",")
+        .map(|c| c.parse::<CodeType>().unwrap())
+        .enumerate()
+        .map(|(i, c)| (i as CodeType, c))
+        .collect()
 }
 
 fn number_of_args(code: CodeType) -> CodeType {
