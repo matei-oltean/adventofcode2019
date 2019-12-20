@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
-pub type CodeType = isize;
-pub type Program = HashMap<CodeType, CodeType>;
+type CodeType = isize;
+pub type Program = HashMap<usize, CodeType>;
 
 pub struct Machine {
     program: Program,
-    index: CodeType,
+    index: usize,
     phase: Option<CodeType>,
     base: CodeType,
 }
@@ -14,7 +14,7 @@ impl Machine {
     pub fn new(program: Program, phase: Option<CodeType>) -> Self {
         Machine {
             program: program,
-            index: 0 as CodeType,
+            index: 0,
             phase: phase,
             base: 0 as CodeType,
         }
@@ -39,19 +39,19 @@ impl Machine {
 
             let args: Vec<CodeType> = (0..arg_length)
                 .map(|i| match operation / pow_10[(i as usize)] % 10 {
-                    0 => self.get(self.index + (i as CodeType) + 1),
-                    1 => self.index + (i as CodeType) + 1,
-                    2 => self.base + self.get(self.index + (i as CodeType) + 1),
+                    0 => self.get(self.index + i + 1),
+                    1 => (self.index + i + 1) as CodeType,
+                    2 => self.base + self.get(self.index + i + 1),
                     _ => 0,
                 })
                 .collect();
             self.index += arg_length + 1;
-            let position = *args.last().unwrap();
-            let a = self.get(args[0]);
+            let position = *args.last().unwrap() as usize;
+            let a = self.get(args[0] as usize);
             let b = if arg_length <= 1 {
                 0
             } else {
-                self.get(args[1])
+                self.get(args[1] as usize)
             };
             match code {
                 1 => {
@@ -80,7 +80,7 @@ impl Machine {
                                 i
                             }
                         };
-                        self.set(position, inp);
+                        self.set(position as usize, inp);
                     }
                 },
                 4 => {
@@ -88,19 +88,19 @@ impl Machine {
                 }
                 5 => {
                     if a != 0 {
-                        self.index = b
+                        self.index = b as usize
                     }
                 }
                 6 => {
                     if a == 0 {
-                        self.index = b
+                        self.index = b as usize
                     }
                 }
                 7 => {
-                    self.set(position, (a < b) as CodeType);
+                    self.set(position as usize, (a < b) as CodeType);
                 }
                 8 => {
-                    self.set(position, (a == b) as CodeType);
+                    self.set(position as usize, (a == b) as CodeType);
                 }
                 9 => {
                     self.base += a;
@@ -111,11 +111,11 @@ impl Machine {
         result
     }
 
-    pub fn set(&mut self, index: CodeType, value: CodeType) {
+    pub fn set(&mut self, index: usize, value: CodeType) {
         self.program.insert(index, value);
     }
 
-    pub fn get(&mut self, index: CodeType) -> CodeType {
+    pub fn get(&mut self, index: usize) -> CodeType {
         match self.program.get(&index) {
             None => {
                 self.set(index, 0);
@@ -135,11 +135,10 @@ pub fn program_from_file(path: &str) -> Program {
         .split(",")
         .map(|c| c.parse::<CodeType>().unwrap())
         .enumerate()
-        .map(|(i, c)| (i as CodeType, c))
         .collect()
 }
 
-fn number_of_args(code: CodeType) -> CodeType {
+fn number_of_args(code: CodeType) -> usize {
     match code {
         1 | 2 | 7 | 8 => 3,
         3 | 4 | 9 => 1,
