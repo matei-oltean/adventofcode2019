@@ -58,7 +58,46 @@ fn do_dfs(machine: &mut intcode::Machine) -> usize {
     }
 }
 
+fn get_furthest(machine: &mut intcode::Machine) -> usize {
+    let mut curr_pt = (0, 0);
+    let mut res = 0;
+    let mut visited = HashSet::new();
+    let mut route = Vec::new();
+    let directions = [1, 2, 3, 4];
+    'outer: loop {
+        visited.insert(curr_pt.clone());
+        for &dir in directions.iter() {
+            let next = next_point(&curr_pt, dir);
+            if visited.contains(&next) {
+                continue;
+            }
+            let res = machine.process(Some(dir));
+            let mv = res.first().unwrap();
+            if mv == &0 {
+                continue;
+            }
+            curr_pt = next;
+            route.push(dir);
+            continue 'outer;
+        }
+        res = res.max(route.len());
+        loop {
+            if route.len() == 0 {
+                return res;
+            }
+            let prev = route.pop().unwrap();
+            let (p, d) = prev_point(&curr_pt, prev);
+            curr_pt = p;
+            machine.process(Some(d));
+            if prev != 4 {
+                break;
+            }
+        }
+    }
+}
+
 fn main() {
     let mut machine = intcode::Machine::from_file("15.input", None);
     println!("{}", do_dfs(&mut machine));
+    println!("{}", get_furthest(&mut machine));
 }
