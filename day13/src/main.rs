@@ -1,9 +1,5 @@
 fn get_blocks(screen: &[&[isize]]) -> usize {
-    screen
-        .iter()
-        .filter(|v| v[2] == 2)
-        .collect::<Vec<_>>()
-        .len()
+    screen.iter().filter(|v| v[2] == 2).count()
 }
 
 fn get_item_coords(screen: &[&[isize]], id: isize) -> (isize, isize) {
@@ -13,21 +9,18 @@ fn get_item_coords(screen: &[&[isize]], id: isize) -> (isize, isize) {
         .collect::<Vec<_>>()
         .first()
     {
-        None => (0 as isize, 0 as isize),
+        None => (0_isize, 0_isize),
         Some(t) => (t[0], t[1]),
     }
 }
 
 fn try_get_score(screen: &[&[isize]]) -> Option<isize> {
-    match screen
+    screen
         .iter()
         .filter(|t| (t[0] == -1) && (t[1] == 0))
         .collect::<Vec<_>>()
         .first()
-    {
-        None => None,
-        Some(t) => Some(t[2]),
-    }
+        .map(|t| t[2])
 }
 
 fn get_score(machine: &mut intcode::Machine) {
@@ -35,11 +28,8 @@ fn get_score(machine: &mut intcode::Machine) {
     loop {
         let machine_output = machine.process(next_instruction);
         let screen: Vec<_> = machine_output.chunks(3).collect();
-        match try_get_score(&screen) {
-            Some(n) => {
-                dbg!(n);
-            }
-            None => (),
+        if let Some(n) = try_get_score(&screen) {
+            dbg!(n);
         }
         next_instruction = match get_item_coords(&screen, 3).0 - get_item_coords(&screen, 4).0 {
             0 => Some(0),

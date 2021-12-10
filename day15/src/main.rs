@@ -28,7 +28,7 @@ fn do_dfs(machine: &mut intcode::Machine) -> usize {
     let mut route = Vec::new();
     let directions = [1, 2, 3, 4];
     'outer: loop {
-        visited.insert(curr_pt.clone());
+        visited.insert(curr_pt);
         for &dir in directions.iter() {
             let next = next_point(&curr_pt, dir);
             if visited.contains(&next) {
@@ -65,7 +65,7 @@ fn get_furthest(machine: &mut intcode::Machine) -> usize {
     let mut route = Vec::new();
     let directions = [1, 2, 3, 4];
     'outer: loop {
-        visited.insert(curr_pt.clone());
+        visited.insert(curr_pt);
         for &dir in directions.iter() {
             let next = next_point(&curr_pt, dir);
             if visited.contains(&next) {
@@ -82,7 +82,7 @@ fn get_furthest(machine: &mut intcode::Machine) -> usize {
         }
         res = res.max(route.len());
         loop {
-            if route.len() == 0 {
+            if route.is_empty() {
                 return res;
             }
             let prev = route.pop().unwrap();

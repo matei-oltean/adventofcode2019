@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 use std::f32::consts::PI;
 
@@ -19,12 +20,10 @@ fn dist((x, y): &Point, (xx, yy): &Point) -> u32 {
 }
 
 fn slope_to_angle((x, y): &Slope) -> Angle {
-    if *x == 0 {
-        (-*y as f32) * PI
-    } else if *x > 0 {
-        (-*y as f32 / *x as f32).atan()
-    } else {
-        (-*y as f32 / *x as f32).atan() - PI
+    match x.cmp(&0) {
+        Ordering::Greater => (-*y as f32 / *x as f32).atan(),
+        Ordering::Less => (-*y as f32 / *x as f32).atan() - PI,
+        Ordering::Equal => (-*y as f32) * PI,
     }
 }
 

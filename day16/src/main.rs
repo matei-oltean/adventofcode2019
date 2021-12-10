@@ -36,7 +36,7 @@ fn do_iteration(iterations: usize, array: &mut Vec<usize>) {
 
 fn do_iteration_with_offset(iterations: usize, array: &[usize], repeat: usize) -> usize {
     let n = array.len();
-    let offset = take(7, &array);
+    let offset = take(7, array);
     let mut array_res: Vec<usize> = (offset..repeat * n)
         .map(|i| array[i % n] as usize)
         .collect();
@@ -52,11 +52,11 @@ fn do_iteration_with_offset(iterations: usize, array: &[usize], repeat: usize) -
 }
 
 fn main() {
-    let mut input: Vec<_> = reader::read_input("16.input")
+    let input: Vec<_> = reader::read_input("16.input")
         .chars()
         .map(|s| s.to_digit(10).unwrap() as usize)
         .collect();
     //do_iteration(100, &mut input);
     //println!("{}", take(8, &input));
-    println!("{}", do_iteration_with_offset(100, &mut input, 10_000));
+    println!("{}", do_iteration_with_offset(100, &input, 10_000));
 }

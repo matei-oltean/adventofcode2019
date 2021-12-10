@@ -27,10 +27,8 @@ fn put_box(b_x: usize, b_y: usize, program: &intcode::Program) -> usize {
         }
         if right >= b_x {
             let left = right - b_x + 1;
-            if get(left, y, program) == 1 {
-                if get(left, y + b_y - 1, program) == 1 {
-                    return 10_000 * left + y;
-                }
+            if get(left, y, program) == 1 && get(left, y + b_y - 1, program) == 1 {
+                return 10_000 * left + y;
             }
         }
         y += 1;

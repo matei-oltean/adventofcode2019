@@ -13,10 +13,10 @@ pub struct Machine {
 impl Machine {
     pub fn new(program: Program, phase: Option<CodeType>) -> Self {
         Machine {
-            program: program,
+            program,
             index: 0,
-            phase: phase,
-            base: 0 as CodeType,
+            phase,
+            base: 0_isize,
         }
     }
 
@@ -132,7 +132,7 @@ impl Machine {
 
 pub fn program_from_file(path: &str) -> Program {
     reader::read_input(path)
-        .split(",")
+        .split(',')
         .map(|c| c.parse::<CodeType>().unwrap())
         .enumerate()
         .collect()

@@ -38,7 +38,7 @@ fn next_direction(d: &Direction, result: isize) -> Direction {
 
 fn paint(machine: &mut Machine, initial_colour: isize) -> HashMap<Point, isize> {
     let mut direction = Direction::U;
-    let mut pt = (0 as i32, 0 as i32);
+    let mut pt = (0_i32, 0_i32);
     let mut result = HashMap::new();
     result.insert(pt, initial_colour);
     loop {
@@ -47,7 +47,7 @@ fn paint(machine: &mut Machine, initial_colour: isize) -> HashMap<Point, isize> 
             Some(x) => *x,
         };
         let op_result = machine.process(Some(colour));
-        if op_result.len() == 0 {
+        if op_result.is_empty() {
             return result;
         }
         let (c, d) = (op_result[0], op_result[1]);
@@ -62,7 +62,7 @@ fn main() {
     let painted = paint(&mut machine, 1);
     let filtered: HashSet<_> = painted
         .iter()
-        .filter(|(_, c)| if **c == 0 { false } else { true })
+        .filter(|(_, c)| **c != 0)
         .map(|(p, _)| p)
         .collect();
     let (min_x, min_y): Point = filtered

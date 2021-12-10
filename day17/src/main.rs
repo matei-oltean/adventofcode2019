@@ -3,7 +3,7 @@ fn main() {
     let mut scaffolds = machine.process(None);
     for &mut i in scaffolds.iter_mut() {
         if i == 10 {
-            println!("");
+            println!();
         } else if i == 46 {
             print!(".");
         } else {

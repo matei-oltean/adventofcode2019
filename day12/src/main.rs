@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 type Position = (isize, isize, isize);
+use std::cmp::Ordering;
 
 fn get_ith(i: i32, (x, y, z): &Position) -> isize {
     match i {
@@ -17,20 +18,20 @@ fn times((x, y, z): &mut Position, n: isize) {
 }
 
 fn update_position((x, y, z): &mut Position, (dx, dy, dz): &Position) {
-    if dx > &0 {
-        *x += 1;
-    } else if dx < &0 {
-        *x -= 1;
+    match dx.cmp(&0) {
+        Ordering::Greater => *x += 1,
+        Ordering::Less => *x -= 1,
+        Ordering::Equal => (),
     }
-    if dy > &0 {
-        *y += 1;
-    } else if dy < &0 {
-        *y -= 1;
+    match dy.cmp(&0) {
+        Ordering::Greater => *y += 1,
+        Ordering::Less => *y -= 1,
+        Ordering::Equal => (),
     }
-    if dz > &0 {
-        *z += 1;
-    } else if dz < &0 {
-        *z -= 1;
+    match dz.cmp(&0) {
+        Ordering::Greater => *z += 1,
+        Ordering::Less => *z -= 1,
+        Ordering::Equal => (),
     }
 }
 
@@ -45,14 +46,14 @@ fn diff((x, y, z): &mut Position, (dx, dy, dz): &Position) {
 }
 
 fn get_energy(steps: isize, planets: &mut [Position]) -> isize {
-    let mut velocities: Vec<Position> = vec![(0 as isize, 0 as isize, 0 as isize); planets.len()];
+    let mut velocities: Vec<Position> = vec![(0_isize, 0_isize, 0_isize); planets.len()];
     for _ in 0..steps {
         for (i, (x, y, z)) in planets.iter().enumerate() {
             for j in i + 1..planets.len() {
                 let (xx, yy, zz) = planets[j];
                 let mut diff = (xx - x, yy - y, zz - z);
                 update_position(&mut velocities[i], &diff);
-                times(&mut diff, -1 as isize);
+                times(&mut diff, -1_isize);
                 update_position(&mut velocities[j], &diff);
             }
         }
@@ -74,12 +75,12 @@ fn get_cycle(planets: &[Position]) -> usize {
                 let (a, b) = (a.max(b), a.min(b));
                 gcd(b, a % b)
             }
-        };
+        }
         a * b / gcd(a, b)
-    };
+    }
     let mut res = 0;
-    let mut new_positions: Vec<_> = planets.iter().cloned().collect();
-    let mut velocities: Vec<Position> = vec![(0 as isize, 0 as isize, 0 as isize); planets.len()];
+    let mut new_positions: Vec<_> = planets.to_vec();
+    let mut velocities: Vec<Position> = vec![(0_isize, 0_isize, 0_isize); planets.len()];
     let mut found: usize = 0;
     let mut cycles = HashMap::new();
 
@@ -89,7 +90,7 @@ fn get_cycle(planets: &[Position]) -> usize {
                 let (xx, yy, zz) = new_positions[j];
                 let mut diff = (xx - x, yy - y, zz - z);
                 update_position(&mut velocities[i], &diff);
-                times(&mut diff, -1 as isize);
+                times(&mut diff, -1_isize);
                 update_position(&mut velocities[j], &diff);
             }
         }
@@ -104,14 +105,14 @@ fn get_cycle(planets: &[Position]) -> usize {
                 (get_ith(i, &velocities[j]) == 0)
                     && (get_ith(i, &planets[j])) == get_ith(i, &new_positions[j])
             }) {
-                if !(cycles.contains_key(&i)) {
-                    cycles.insert(i, res);
+                if let std::collections::hash_map::Entry::Vacant(e) = cycles.entry(i) {
+                    e.insert(res);
                     found += 1;
                 }
             }
         }
         if found == 3 {
-            return cycles.values().fold(1 as usize, |p, x| ppcm(p, *x));
+            return cycles.values().fold(1_usize, |p, x| ppcm(p, *x));
         }
     }
 }
